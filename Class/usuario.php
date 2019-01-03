@@ -140,6 +140,58 @@ class Usuario {
 
 	}
 
+
+	public static function getList(){
+		
+		$sql = new Sql();
+	
+		return $sql->select("SELECT * FROM usuarios ORDER BY id;");
+
+	}
+
+	
+	public static function search($login){
+
+		$sql = new Sql();
+
+		return $sql->select("SELECT * FROM usuarios WHERE login LIKE :SEARCH ORDER BY login", array(
+			':SEARCH'=>"%".$login."%"
+		)); 
+	}
+
+
+	public function login($login, $password){
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM usuarios WHERE login = :LOGIN AND senha = :PASSWORD", array (
+			":LOGIN"=>$login,
+			":PASSWORD"=>$password
+		));
+	
+		if (count($results) > 0) {
+
+			$row = $results[0];
+
+			$this->setId($row['id']);
+			$this->setLogin($row['login']);
+			$this->setSenha($row['senha']);
+			$this->setEmail($row['email']);
+			$this->setNome($row['nome']);
+			$this->setBloqueado($row['bloqueado']);
+			$this->setDatacadastro(new DateTime($row['data_cadastro']));
+			$this->setPerfil($row['perfil']);
+			$this->setUsuariocadastro($row['usuario_cadastro']);
+			$this->setBatalhao($row['batalhao']);
+			$this->setRpm($row['rpm']);
+			$this->setMp($row['mp']);
+	} else {
+
+		throw new Exception("Login e/ou senha invalidos.");
+		
+	}
+	}
+
 	public function __toString(){
 
 		return json_encode(array(
