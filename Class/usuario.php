@@ -121,20 +121,7 @@ class Usuario {
 	
 		if (count($results) > 0) {
 
-			$row = $results[0];
-
-			$this->setId($row['id']);
-			$this->setLogin($row['login']);
-			$this->setSenha($row['senha']);
-			$this->setEmail($row['email']);
-			$this->setNome($row['nome']);
-			$this->setBloqueado($row['bloqueado']);
-			$this->setDatacadastro(new DateTime($row['data_cadastro']));
-			$this->setPerfil($row['perfil']);
-			$this->setUsuariocadastro($row['usuario_cadastro']);
-			$this->setBatalhao($row['batalhao']);
-			$this->setRpm($row['rpm']);
-			$this->setMp($row['mp']);
+			$this->setData($results[0]);
 		}
 
 
@@ -171,25 +158,124 @@ class Usuario {
 	
 		if (count($results) > 0) {
 
-			$row = $results[0];
+			$this->setData($results[0]);
 
-			$this->setId($row['id']);
-			$this->setLogin($row['login']);
-			$this->setSenha($row['senha']);
-			$this->setEmail($row['email']);
-			$this->setNome($row['nome']);
-			$this->setBloqueado($row['bloqueado']);
-			$this->setDatacadastro(new DateTime($row['data_cadastro']));
-			$this->setPerfil($row['perfil']);
-			$this->setUsuariocadastro($row['usuario_cadastro']);
-			$this->setBatalhao($row['batalhao']);
-			$this->setRpm($row['rpm']);
-			$this->setMp($row['mp']);
+			
 	} else {
 
 		throw new Exception("Login e/ou senha invalidos.");
 		
 	}
+	}
+
+
+	public function setData($data){
+
+			$this->setId($data['id']);
+			$this->setLogin($data['login']);
+			$this->setSenha($data['senha']);
+			$this->setEmail($data['email']);
+			$this->setNome($data['nome']);
+			$this->setBloqueado($data['bloqueado']);
+			$this->setDatacadastro(new DateTime($data['data_cadastro']));
+			$this->setPerfil($data['perfil']);
+			$this->setUsuariocadastro($data['usuario_cadastro']);
+			$this->setBatalhao($data['batalhao']);
+			$this->setRpm($data['rpm']);
+			$this->setMp($data['mp']);
+
+	}
+
+
+	public function insert(){
+
+		$sql = new Sql();
+
+		$results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD, :EMAIL, :NOME, :BLOQUEADO, :PERFIL, :USUARIOCADASTRO, :BATALHAO, :RPM, :MP)", array(
+
+			':LOGIN'=>$this->getLogin(),
+			':PASSWORD'=>$this->getSenha(),
+			':EMAIL'=>$this->getEmail(),
+			':NOME'=>$this->getNome(),
+			':BLOQUEADO'=>$this->getBloqueado(),
+			':PERFIL'=>$this->getPerfil(),
+			':USUARIOCADASTRO'=>$this->getUsuariocadastro(),
+			':BATALHAO'=>$this->getBatalhao(),
+			':RPM'=>$this->getRpm(),
+			':MP'=>$this->getMp()
+		));
+
+		if (count($results) > 0) {
+
+			$this->setData($results[0]);
+		}
+	}
+
+
+	public function update($login, $password, $bloqueado, $perfil, $batalhao, $rpm, $mp){
+
+		$this->setLogin($login);
+		$this->setSenha($password);
+		$this->setBloqueado($bloqueado);
+		$this->setPerfil($perfil);
+		$this->setBatalhao($batalhao);
+		$this->setRpm($rpm);
+		$this->setMp($mp);
+
+		$sql = new Sql();
+
+		$sql->query("UPDATE usuarios SET login = :LOGIN, senha = :PASSWORD, bloqueado = :BLOQUEADO, perfil = :PERFIL, batalhao = :BATALHAO, rpm = :RPM, mp = :MP WHERE id = :ID", array(
+
+			':LOGIN'=>$this->getLogin(),
+			':PASSWORD'=>$this->getSenha(),
+			':BLOQUEADO'=>$this->getBloqueado(),
+			':PERFIL'=>$this->getPerfil(),
+			':BATALHAO'=>$this->getBatalhao(),
+			':RPM'=>$this->getRpm(),
+			':MP'=>$this->getMp(),
+			':ID'=>$this->getId()
+		));
+	}
+
+	
+	public function delete(){
+
+		$sql = new Sql();
+
+		$sql->query("DELETE FROM usuarios WHERE id = :ID", array(
+			':ID'=>$this->getId()
+		));
+	
+		$this->setId(0);
+		$this->setLogin("");
+		$this->setSenha("");
+		$this->setEmail("");
+		$this->setNome("");
+		$this->setBloqueado("");
+		$this->setDatacadastro(new DateTime());
+		$this->setPerfil("");
+		$this->setUsuariocadastro("");
+		$this->setBatalhao("");
+		$this->setRpm("");
+		$this->setMp("");
+
+	}
+
+
+
+	public function __construct($login = "", $password = "", $email = "", $nome = "", $bloqueado = "", $perfil = "", $usuario_cadastro = "", $batalhao = "", $rpm = "", $mp = ""){
+
+			$this->setLogin($login);
+			$this->setSenha($password);
+			$this->setEmail($email);
+			$this->setNome($nome);
+			$this->setBloqueado($bloqueado);
+			$this->setPerfil($perfil);
+			$this->setUsuariocadastro($usuario_cadastro);
+			$this->setBatalhao($batalhao);
+			$this->setRpm($rpm);
+			$this->setMp($mp);
+
 	}
 
 	public function __toString(){
